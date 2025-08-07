@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		ABFB6F182E44449700BFE979 /* Pulse in Frameworks */ = {isa = PBXBuildFile; productRef = ABFB6F172E44449700BFE979 /* Pulse */; };
+		ABFB6F1A2E44449700BFE979 /* PulseProxy in Frameworks */ = {isa = PBXBuildFile; productRef = ABFB6F192E44449700BFE979 /* PulseProxy */; };
+		ABFB6F1C2E44449700BFE979 /* PulseUI in Frameworks */ = {isa = PBXBuildFile; productRef = ABFB6F1B2E44449700BFE979 /* PulseUI */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		ABFB6EE32E44367E00BFE979 /* note-debugger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "note-debugger.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +29,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ABFB6F1C2E44449700BFE979 /* PulseUI in Frameworks */,
+				ABFB6F182E44449700BFE979 /* Pulse in Frameworks */,
+				ABFB6F1A2E44449700BFE979 /* PulseProxy in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +74,9 @@
 			);
 			name = "note-debugger";
 			packageProductDependencies = (
+				ABFB6F172E44449700BFE979 /* Pulse */,
+				ABFB6F192E44449700BFE979 /* PulseProxy */,
+				ABFB6F1B2E44449700BFE979 /* PulseUI */,
 			);
 			productName = "note-debugger";
 			productReference = ABFB6EE32E44367E00BFE979 /* note-debugger.app */;
@@ -94,6 +106,9 @@
 			);
 			mainGroup = ABFB6EDA2E44367E00BFE979;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				ABFB6F162E44449700BFE979 /* XCRemoteSwiftPackageReference "Pulse" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = ABFB6EE42E44367E00BFE979 /* Products */;
 			projectDirPath = "";
@@ -324,6 +339,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		ABFB6F162E44449700BFE979 /* XCRemoteSwiftPackageReference "Pulse" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kean/Pulse";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		ABFB6F172E44449700BFE979 /* Pulse */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ABFB6F162E44449700BFE979 /* XCRemoteSwiftPackageReference "Pulse" */;
+			productName = Pulse;
+		};
+		ABFB6F192E44449700BFE979 /* PulseProxy */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ABFB6F162E44449700BFE979 /* XCRemoteSwiftPackageReference "Pulse" */;
+			productName = PulseProxy;
+		};
+		ABFB6F1B2E44449700BFE979 /* PulseUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ABFB6F162E44449700BFE979 /* XCRemoteSwiftPackageReference "Pulse" */;
+			productName = PulseUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = ABFB6EDB2E44367E00BFE979 /* Project object */;
 }
