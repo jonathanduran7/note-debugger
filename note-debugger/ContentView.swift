@@ -14,6 +14,7 @@ struct ContentView: View {
     @State private var noteToDelete: Note?
     @State private var newNoteTitle = ""
     @State private var editNoteTitle = ""
+    @State private var isRefreshing = false
     
     var body: some View {
         NavigationView {
@@ -29,8 +30,7 @@ struct ContentView: View {
                 .padding()
                 .background(ColorPalette.light.opacity(0.1))
                 
-                // Lista de notas
-                if viewModel.isLoading {
+                if viewModel.isLoading && !isRefreshing {
                     VStack(spacing: 16) {
                         ProgressView()
                             .scaleEffect(1.2)
@@ -63,30 +63,45 @@ struct ContentView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color.white)
                 } else {
-                    ScrollView {
-                        LazyVStack(spacing: 12) {
-                            ForEach(viewModel.filteredNotes, id: \.id) { note in
-                                NoteCardView(
-                                    note: note,
-                                    onEdit: {
-                                        editNoteTitle = note.title
-                                        viewModel.selectNoteForEdit(note)
-                                    },
-                                    onDelete: {
-                                        noteToDelete = note
-                                        showingDeleteAlert = true
-                                    }
-                                )
+                    ZStack {
+                        ScrollView {
+                            LazyVStack(spacing: 12) {
+                                ForEach(viewModel.filteredNotes, id: \.id) { note in
+                                    NoteCardView(
+                                        note: note,
+                                        onEdit: {
+                                            editNoteTitle = note.title
+                                            viewModel.selectNoteForEdit(note)
+                                        },
+                                        onDelete: {
+                                            noteToDelete = note
+                                            showingDeleteAlert = true
+                                        }
+                                    )
+                                }
                             }
+                            .padding()
                         }
-                        .padding()
+                        .background(Color.white)
                     }
-                    .background(Color.white)
                 }
             }
             .navigationTitle("Mis Notas")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        refreshNotes()
+                    }) {
+                        Image(systemName: "arrow.clockwise")
+                            .foregroundColor(viewModel.isLoading ? ColorPalette.accent : ColorPalette.primary)
+                            .font(.title2)
+                            .rotationEffect(.degrees(isRefreshing ? 360 : 0))
+                            .animation(isRefreshing ? .linear(duration: 1).repeatForever(autoreverses: false) : .default, value: isRefreshing)
+                    }
+                    .disabled(viewModel.isLoading)
+                }
+                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         newNoteTitle = ""
@@ -149,7 +164,16 @@ struct ContentView: View {
             viewModel.loadNotes()
         }
         .refreshable {
-            viewModel.loadNotes()
+            refreshNotes()
+        }
+    }
+    
+    private func refreshNotes() {
+        isRefreshing = true
+        viewModel.loadNotes()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            isRefreshing = false
         }
     }
 }
