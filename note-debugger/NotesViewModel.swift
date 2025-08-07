@@ -18,6 +18,7 @@ class NotesViewModel: ObservableObject {
     @Published var sortOption: SortOption = .dateCreated
     @Published var isLoading = false
     @Published var errorMessage: String?
+    @Published var successMessage: String?
     
     private let apiService = APIService.shared
     
@@ -44,6 +45,7 @@ class NotesViewModel: ObservableObject {
     func loadNotes() {
         isLoading = true
         errorMessage = nil
+        successMessage = nil
         
         Task {
             do {
@@ -63,6 +65,7 @@ class NotesViewModel: ObservableObject {
     func addNote(title: String) {
         isLoading = true
         errorMessage = nil
+        successMessage = nil
         
         Task {
             do {
@@ -70,6 +73,7 @@ class NotesViewModel: ObservableObject {
                 notes.append(newNote)
                 showingAddNote = false
                 isLoading = false
+                successMessage = "Nota creada exitosamente"
             } catch let apiError as APIError {
                 errorMessage = apiError.errorDescription
                 isLoading = false
@@ -83,6 +87,7 @@ class NotesViewModel: ObservableObject {
     func updateNote(_ note: Note, title: String) {
         isLoading = true
         errorMessage = nil
+        successMessage = nil
         
         Task {
             do {
@@ -93,6 +98,7 @@ class NotesViewModel: ObservableObject {
                 showingEditNote = false
                 selectedNote = nil
                 isLoading = false
+                successMessage = "Nota actualizada exitosamente"
             } catch let apiError as APIError {
                 errorMessage = apiError.errorDescription
                 isLoading = false
@@ -106,15 +112,28 @@ class NotesViewModel: ObservableObject {
     func deleteNote(_ note: Note) {
         isLoading = true
         errorMessage = nil
+        successMessage = nil
         
         Task {
             do {
                 try await apiService.deleteNote(id: note.id)
                 notes.removeAll { $0.id == note.id }
                 isLoading = false
+                successMessage = "Nota eliminada exitosamente"
             } catch let apiError as APIError {
-                errorMessage = apiError.errorDescription
-                isLoading = false
+                if case .serverError(let code) = apiError {
+                    if code == 200 || code == 204 {
+                        notes.removeAll { $0.id == note.id }
+                        isLoading = false
+                        successMessage = "Nota eliminada exitosamente"
+                    } else {
+                        errorMessage = apiError.errorDescription
+                        isLoading = false
+                    }
+                } else {
+                    errorMessage = apiError.errorDescription
+                    isLoading = false
+                }
             } catch {
                 errorMessage = error.localizedDescription
                 isLoading = false
@@ -129,5 +148,9 @@ class NotesViewModel: ObservableObject {
     
     func clearError() {
         errorMessage = nil
+    }
+    
+    func clearSuccess() {
+        successMessage = nil
     }
 }

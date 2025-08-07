@@ -219,7 +219,7 @@ class APIService {
             
             if let httpResponse = response as? HTTPURLResponse {
                 print("📡 HTTP Status: \(httpResponse.statusCode)")
-                guard httpResponse.statusCode == 204 else {
+                guard httpResponse.statusCode == 200 || httpResponse.statusCode == 204 else {
                     print("❌ Server error: \(httpResponse.statusCode)")
                     throw APIError.serverError(httpResponse.statusCode)
                 }

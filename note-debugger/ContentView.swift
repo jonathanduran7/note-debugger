@@ -160,6 +160,15 @@ struct ContentView: View {
                 Text(errorMessage)
             }
         }
+        .alert("Éxito", isPresented: .constant(viewModel.successMessage != nil)) {
+            Button("OK") {
+                viewModel.clearSuccess()
+            }
+        } message: {
+            if let successMessage = viewModel.successMessage {
+                Text(successMessage)
+            }
+        }
         .onAppear {
             viewModel.loadNotes()
         }
