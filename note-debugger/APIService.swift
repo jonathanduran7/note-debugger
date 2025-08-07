@@ -50,7 +50,6 @@ class APIService {
     
     func fetchNotes() async throws -> [Note] {
         guard let url = URL(string: "\(baseURL)/notes") else {
-            print("❌ Error: URL inválida para fetchNotes")
             throw APIError.invalidURL
         }
         
@@ -58,45 +57,28 @@ class APIService {
         request.httpMethod = "GET"
         headers.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
         
-        print("🌐 Fetching notes from: \(url)")
-        print("📋 Headers: \(headers)")
-        
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
             
-            print("📥 Response received")
-            print("📊 Data size: \(data.count) bytes")
-            
             if let httpResponse = response as? HTTPURLResponse {
-                print("📡 HTTP Status: \(httpResponse.statusCode)")
                 guard httpResponse.statusCode == 200 else {
-                    print("❌ Server error: \(httpResponse.statusCode)")
                     throw APIError.serverError(httpResponse.statusCode)
                 }
             }
             
-            if let responseString = String(data: data, encoding: .utf8) {
-                print("📄 Response data: \(responseString)")
-            }
-            
             let notes = try JSONDecoder().decode([Note].self, from: data)
-            print("✅ Successfully decoded \(notes.count) notes")
             return notes
         } catch let decodingError as DecodingError {
-            print("❌ Decoding error: \(decodingError)")
             throw APIError.decodingError
         } catch let apiError as APIError {
-            print("❌ API error: \(apiError)")
             throw apiError
         } catch {
-            print("❌ Network error: \(error)")
             throw APIError.networkError(error)
         }
     }
     
     func createNote(title: String) async throws -> Note {
         guard let url = URL(string: "\(baseURL)/notes") else {
-            print("❌ Error: URL inválida para createNote")
             throw APIError.invalidURL
         }
         
@@ -107,50 +89,32 @@ class APIService {
         let createRequest = CreateNoteRequest(title: title)
         request.httpBody = try JSONEncoder().encode(createRequest)
         
-        print("🌐 Creating note at: \(url)")
-        print("📝 Title: \(title)")
-        
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
             
-            print("📥 Response received")
-            print("📊 Data size: \(data.count) bytes")
-            
             if let httpResponse = response as? HTTPURLResponse {
-                print("📡 HTTP Status: \(httpResponse.statusCode)")
                 guard httpResponse.statusCode == 201 else {
-                    print("❌ Server error: \(httpResponse.statusCode)")
                     throw APIError.serverError(httpResponse.statusCode)
                 }
             }
             
-            if let responseString = String(data: data, encoding: .utf8) {
-                print("📄 Response data: \(responseString)")
-            }
-            
             let notes = try JSONDecoder().decode([Note].self, from: data)
             guard let newNote = notes.first else {
-                print("❌ No note returned from server")
                 throw APIError.noData
             }
             
-            print("✅ Successfully created note with ID: \(newNote.id)")
             return newNote
         } catch let decodingError as DecodingError {
-            print("❌ Decoding error: \(decodingError)")
             throw APIError.decodingError
         } catch let apiError as APIError {
-            print("❌ API error: \(apiError)")
             throw apiError
         } catch {
-            print("❌ Network error: \(error)")
             throw APIError.networkError(error)
         }
     }
     
     func updateNote(id: String, title: String) async throws -> Note {
         guard let url = URL(string: "\(baseURL)/notes?id=eq.\(id)") else {
-            print("❌ Error: URL inválida para updateNote")
             throw APIError.invalidURL
         }
         
@@ -161,50 +125,32 @@ class APIService {
         let updateRequest = UpdateNoteRequest(title: title)
         request.httpBody = try JSONEncoder().encode(updateRequest)
         
-        print("🌐 Updating note at: \(url)")
-        print("📝 New title: \(title)")
-        
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
             
-            print("📥 Response received")
-            print("📊 Data size: \(data.count) bytes")
-            
             if let httpResponse = response as? HTTPURLResponse {
-                print("📡 HTTP Status: \(httpResponse.statusCode)")
                 guard httpResponse.statusCode == 200 else {
-                    print("❌ Server error: \(httpResponse.statusCode)")
                     throw APIError.serverError(httpResponse.statusCode)
                 }
             }
             
-            if let responseString = String(data: data, encoding: .utf8) {
-                print("📄 Response data: \(responseString)")
-            }
-            
             let notes = try JSONDecoder().decode([Note].self, from: data)
             guard let updatedNote = notes.first else {
-                print("❌ No updated note returned from server")
                 throw APIError.noData
             }
             
-            print("✅ Successfully updated note with ID: \(updatedNote.id)")
             return updatedNote
         } catch let decodingError as DecodingError {
-            print("❌ Decoding error: \(decodingError)")
             throw APIError.decodingError
         } catch let apiError as APIError {
-            print("❌ API error: \(apiError)")
             throw apiError
         } catch {
-            print("❌ Network error: \(error)")
             throw APIError.networkError(error)
         }
     }
     
     func deleteNote(id: String) async throws {
         guard let url = URL(string: "\(baseURL)/notes?id=eq.\(id)") else {
-            print("❌ Error: URL inválida para deleteNote")
             throw APIError.invalidURL
         }
         
@@ -212,25 +158,18 @@ class APIService {
         request.httpMethod = "DELETE"
         headers.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
         
-        print("🌐 Deleting note at: \(url)")
-        
         do {
             let (_, response) = try await URLSession.shared.data(for: request)
             
             if let httpResponse = response as? HTTPURLResponse {
-                print("📡 HTTP Status: \(httpResponse.statusCode)")
                 guard httpResponse.statusCode == 200 || httpResponse.statusCode == 204 else {
-                    print("❌ Server error: \(httpResponse.statusCode)")
                     throw APIError.serverError(httpResponse.statusCode)
                 }
             }
             
-            print("✅ Successfully deleted note with ID: \(id)")
         } catch let apiError as APIError {
-            print("❌ API error: \(apiError)")
             throw apiError
         } catch {
-            print("❌ Network error: \(error)")
             throw APIError.networkError(error)
         }
     }
