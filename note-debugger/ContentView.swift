@@ -16,6 +16,7 @@ struct ContentView: View {
     @State private var newNoteTitle = ""
     @State private var editNoteTitle = ""
     @State private var isRefreshing = false
+    @State private var showingPulseConsole = false
     
     var body: some View {
         NavigationView {
@@ -26,6 +27,14 @@ struct ContentView: View {
                     HStack {
                         SortPickerView(selectedOption: $viewModel.sortOption)
                         Spacer()
+                        
+                        Button(action: {
+                            showingPulseConsole = true
+                        }) {
+                            Image(systemName: "terminal")
+                                .foregroundColor(ColorPalette.secondary)
+                                .font(.title3)
+                        }
                     }
                 }
                 .padding()
@@ -66,9 +75,6 @@ struct ContentView: View {
                 } else {
                     ZStack {
                         ScrollView {
-//                            NavigationLink(destination: ConsoleView()) {
-//                                Text("Console")
-//                            }
                             LazyVStack(spacing: 12) {
                                 ForEach(viewModel.filteredNotes, id: \.id) { note in
                                     NoteCardView(
@@ -144,6 +150,20 @@ struct ContentView: View {
                     viewModel.selectedNote = nil
                 }
             )
+        }
+        .sheet(isPresented: $showingPulseConsole) {
+            NavigationView {
+                ConsoleView()
+                    .navigationTitle("Pulse Console")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Cerrar") {
+                                showingPulseConsole = false
+                            }
+                        }
+                    }
+            }
         }
         .alert("Eliminar Nota", isPresented: $showingDeleteAlert) {
             Button("Cancelar", role: .cancel) { }
