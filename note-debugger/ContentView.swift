@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PulseUI
 
 struct ContentView: View {
     @StateObject private var viewModel = NotesViewModel()
@@ -65,6 +66,9 @@ struct ContentView: View {
                 } else {
                     ZStack {
                         ScrollView {
+//                            NavigationLink(destination: ConsoleView()) {
+//                                Text("Console")
+//                            }
                             LazyVStack(spacing: 12) {
                                 ForEach(viewModel.filteredNotes, id: \.id) { note in
                                     NoteCardView(
